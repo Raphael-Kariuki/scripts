@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+set -eu
+
+set -o pipefail
+
+android_ip=$( sudo virsh domifaddr --domain android|awk 'NR==3'|awk '{print $4}'|cut -f1 -d "/" )
+
+adb connect $android_ip && adb root && adb connect $android_ip
+
+

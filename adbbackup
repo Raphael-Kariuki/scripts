@@ -1,0 +1,50 @@
+#!/usr/bin/env zsh
+
+#set -eu
+#set -o pipefail
+
+#check whether partition holding the required resources is mounted else mount
+slave_status(){
+	mount|grep sda4 > /dev/null && echo "Slave Ok" || sudo mount /dev/sda4 /media/slave/ > /dev/null
+
+}
+#check whether libvirt is started else start
+libvirt_status(){
+	 systemctl is-active libvirtd.service > /dev/null && echo "Libvirtd OK" || systemctl start libvirtd.service
+
+}
+kali_ip=""
+#check whether android domain is up and running else start
+domstate(){
+	[[ "$( sudo virsh domstate --domain android )" == "running" ]] && echo "android running.." || sudo virsh start android
+}
+
+#run the functions
+slave_status && libvirt_status && domstate
+#source ~/trial
+#trial_function
+#connect android space via adb
+#Domain has to be full powered on for adb_conn() function to run
+adb_conn(){
+	android_ip=$( sudo virsh domifaddr --domain android|awk 'NR==3'|awk '{print $4}'|cut -f1 -d "/" ) && \
+
+	adb connect $android_ip && adb root && adb connect $android_ip
+
+}
+#run function to connect
+#trap 'backup' 15
+adb_conn
+[[ $? -eq 0 ]] && echo "connected" || until adb_conn && [[ $? -eq 0 ]];do echo "connecte" ; done
+#pull files
+#
+#cd into correct dir
+#
+#
+pushd /media/slave/adb_backup/ &&\
+
+adb pull /storage/emulated/0/ && adb kill-server && 7z a 0_"`date`".7z 0 && rm -r 0 && sudo virsh destroy android && \
+
+popd
+
+exit
+
