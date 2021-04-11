@@ -1,0 +1,26 @@
+read  interface
+
+r_statement="/sys/class/net/$interface/statistics/rx_bytes"
+t_statement="/sys/class/net/$interface/statistics/tx_bytes"
+
+while true;
+do
+check_net_speed(){
+rx1=`cat $r_statement`
+tx1=`cat $t_statement`
+sleep 1
+rx2=`cat $r_statement`
+tx2=`cat $t_statement`
+
+RX=`expr $rx2 - $rx1`
+TX=`expr $tx2 - $tx1`
+
+RXs=$(($RX/1024))
+TXs=$(($TX/1024))
+
+echo "$RXs kB/s $TXs kB/s"
+
+}
+check_net_speed
+;
+done
