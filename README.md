@@ -1,2 +1,2 @@
 # scripts
-tiny scripts to aid in day today scripting
+tiny scripts to aid in day to day scripting
