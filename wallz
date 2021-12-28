@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+while true; do feh --no-fehbg --bg-max "$( find $HOME/discord -type f | shuf -n 1 )" && sleep 240;done&
+
+disown %while
+
+picom&
+
+disown %picom
